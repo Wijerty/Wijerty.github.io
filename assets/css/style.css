@@ -240,6 +240,39 @@ p:last-child { margin-bottom: 0; }
   height: auto;
 }
 
+/* ---------- угадай персонажа ---------- */
+.guess {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.guess__item {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.guess__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  background: var(--paper-warm);
+  /* картинки намеренно крошечные: растягиваем без сглаживания, чтобы был пиксель */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.guess__item figcaption {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------- проигрыватель ---------- */
 .player {
   display: flex;

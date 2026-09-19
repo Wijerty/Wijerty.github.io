@@ -234,11 +234,14 @@ const QUEST = {
       id: 10,
       token: 's55uh',
       badge: 'Этап 10',
-      title: 'Не глядя',
+      title: 'Сквозь пиксели',
       task: {
-        text: 'Лист и карандаш уже ждут. Тебе нужно нарисовать праздничный торт.\n\nУсловия: руки за спиной, лист позади тебя. Подсматривать нельзя.\n\nЯ оценю.',
-        button: 'Нарисовала',
-        hint: ''
+        /* Ответы: 1 — Люцифер, 2 — Каин, 3 — Мальбонте. Все из «Секрета Небес».
+           Продублированы в ОТВЕТЫ.md. */
+        text: 'Три персонажа из «Секрета Небес». Разрешение я им подпортил.\n\nНазывай всех троих по номерам.',
+        html: '<div class="guess"><figure class="guess__item"><img class="guess__img" src="assets/img/guess-1.png" alt="Первый персонаж"><figcaption>1</figcaption></figure><figure class="guess__item"><img class="guess__img" src="assets/img/guess-2.png" alt="Второй персонаж"><figcaption>2</figcaption></figure><figure class="guess__item"><img class="guess__img" src="assets/img/guess-3.png" alt="Третий персонаж"><figcaption>3</figcaption></figure></div>',
+        button: 'Назвала всех',
+        hint: 'Смотри на волосы и крылья — по ним видно больше, чем по лицу.'
       },
       reward: {
         title: 'Почти',
