@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>QR-коды квеста · служебная страница</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%A7%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #fbf3e9; --panel: #f5e8d8; --line: #e4d5c3;
+    --text: #3d2b21; --dim: #6b5546; --faint: #9c8878;
+    --pink: #e2684b; --gold: #c4543a; --mint: #7c9a6d; --red: #c0392b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 28px 18px 80px;
+    font: 15px/1.6 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    color: var(--text); background: var(--bg);
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+
+  h1 { font-size: 26px; margin: 0 0 6px; letter-spacing: -.01em; }
+  .sub { color: var(--dim); margin: 0 0 24px; font-size: 14px; }
+
+  .warn {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 14px 16px; margin-bottom: 26px;
+    background: rgba(226, 104, 75, .09);
+    border: 1px solid rgba(226, 104, 75, .3);
+    border-radius: 12px; color: #a33a22; font-size: 14px; line-height: 1.5;
+  }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 18px; margin-bottom: 22px;
+  }
+  label { display: block; font-size: 12px; text-transform: uppercase;
+          letter-spacing: .1em; color: var(--faint); margin-bottom: 8px; }
+  input[type=text] {
+    width: 100%; padding: 12px 14px; font-size: 15px; font-family: inherit;
+    color: var(--text); background: #fff; border: 1px solid var(--line);
+    border-radius: 9px; outline: none;
+  }
+  input[type=text]:focus { border-color: var(--pink); }
+
+  .row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  button {
+    padding: 11px 18px; font: 600 14px inherit; color: var(--bg);
+    background: var(--pink);
+    border: none; border-radius: 9px; cursor: pointer;
+  }
+  button.ghost { background: transparent; color: var(--dim); border: 1px solid var(--line); }
+  button.danger { background: transparent; color: var(--red); border: 1px solid rgba(255,107,122,.4); }
+  button:active { transform: scale(.98); }
+
+  .cards { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+  .qr-card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 20px; text-align: center;
+    break-inside: avoid;
+  }
+  .qr-card h3 {
+    margin: 0 0 4px; font-size: 15px; letter-spacing: .02em;
+  }
+  .qr-card .task { margin: 0 0 16px; font-size: 13px; color: var(--dim);
+                   min-height: 34px; display: flex; align-items: center; justify-content: center; }
+  .qr-box {
+    background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px;
+    display: inline-block; line-height: 0;
+  }
+  .qr-box svg, .qr-box img { width: 100%; height: auto; max-width: 200px; display: block; }
+  .code {
+    margin: 14px 0 0; font: 600 15px ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: .16em; color: var(--gold); text-transform: uppercase;
+  }
+  .code-label { margin: 2px 0 0; font-size: 11px; color: var(--faint); }
+  .url { margin: 10px 0 0; font-size: 11px; color: var(--faint); word-break: break-all; }
+  .dl { margin-top: 14px; }
+  .dl button { padding: 8px 14px; font-size: 13px; }
+
+  .tag {
+    display: inline-block; padding: 3px 9px; border-radius: 99px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .tag.step  { background: rgba(242,166,90,.2);  color: #8a5a20; }
+  .tag.final { background: rgba(124,154,109,.2); color: #4a6640; }
+  .tag.start { background: rgba(226,104,75,.15); color: #a33a22; }
+  .tag.secret { background: #3d2b21; color: #fbf3e9; }
+
+  .hint { font-size: 13px; color: var(--faint); margin-top: 8px; line-height: 1.55; }
+  .hint code { color: var(--dim); background: #fff; padding: 2px 6px; border-radius: 5px; }
+
+  .err { color: var(--red); font-size: 14px; }
+
+  /* --------- печать: одна карточка на страницу, чёрным по белому --------- */
+  @media print {
+    body { background: #fff; color: #000; padding: 0; }
+    .no-print { display: none !important; }
+    .cards { display: block; }
+    .qr-card {
+      background: #fff; border: none; color: #000;
+      page-break-after: always; break-after: page;
+      height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 0;
+    }
+    .qr-card .task, .url, .dl { display: none; }
+    .qr-box { padding: 0; }
+    .qr-box svg, .qr-box img { max-width: 340px; }
+    .code { color: #000; }
+    .code-label { color: #555; }
+    .tag { border: 1px solid #000; color: #000 !important; background: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>QR-коды квеста</h1>
+  <p class="sub">Служебная страница. Здесь генерируются коды, которые нужно распечатать и разложить по местам.</p>
+
+  <div class="warn no-print">
+    <span>⚠</span>
+    <span><b>Не показывай эту страницу имениннице.</b> Здесь видны все коды и порядок этапов. После раскладки кодов ссылку на <code>/admin.html</code> лучше никому не давать.</span>
+  </div>
+
+  <div class="panel no-print">
+    <label for="base">Адрес сайта</label>
+    <input type="text" id="base" placeholder="https://example.com/">
+    <p class="hint">Это адрес, по которому квест открыт в интернете. QR-коды ведут на <code>адрес/#/код</code>. Поле подставляется автоматически — правь, только если печатаешь коды не с боевого адреса.</p>
+    <div class="row">
+      <button id="regen">Обновить коды</button>
+      <button class="ghost" id="print">Распечатать всё</button>
+      <button class="ghost" id="reset">Сбросить прогресс квеста</button>
+    </div>
+  </div>
+
+  <div id="out" class="cards"></div>
+
+  <div class="panel no-print" style="margin-top:26px">
+    <label>Как раскладывать</label>
+    <p class="hint">
+      Каждая карточка — это QR-код, который открывает <b>свой</b> этап. Печатай и клади их по местам,
+      описанным в поле <code>reward.where</code> предыдущего этапа.<br><br>
+      Первый QR-код — <b>на торт</b>. Он ведёт на главную страницу: Катя сканирует его,
+      читает приветствие и получает подсказку на первое место. Задания на этом шаге нет.<br><br>
+      Под каждым QR напечатан короткий код — резервный вход, если камера не справится.
+      На экране квеста есть кнопка «Ввести код вручную».<br><br>
+      <b>Секретный этап</b> помечен тёмной плашкой. Его код кладётся в место, указанное
+      в подсказке двенадцатого этапа — там, где Катя будет уверена, что квест закончился.
+    </p>
+  </div>
+
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+(() => {
+'use strict';
+
+const out   = document.getElementById('out');
+const base  = document.getElementById('base');
+
+/* адрес сайта по умолчанию — папка, в которой лежит admin.html */
+base.value = QUEST.meta.baseUrl || (location.origin + location.pathname.replace(/admin\.html$/, ''));
+
+function linkFor(token) {
+  let root = base.value.trim();
+  if (root && !root.endsWith('/')) root += '/';
+  return root + '#/' + token;
+}
+
+/** Рисует QR-код в SVG; возвращает null, если библиотека не загрузилась. */
+function makeQR(text) {
+  if (typeof qrcode !== 'function') return null;
+  const qr = qrcode(0, 'M');          // 0 = автоподбор размера, M = 15% избыточности
+  qr.addData(text);
+  qr.make();
+  return qr;
+}
+
+function card({ tag, tagClass, title, task, token, url: fixedUrl, codeLabel }) {
+  const url = fixedUrl || linkFor(token);
+  const qr  = makeQR(url);
+
+  const el = document.createElement('div');
+  el.className = 'qr-card';
+  el.innerHTML = `
+    <span class="tag ${tagClass}">${tag}</span>
+    <h3></h3>
+    <p class="task"></p>
+    <div class="qr-box">${qr ? qr.createSvgTag({ cellSize: 6, margin: 0, scalable: true })
+                             : '<p class="err" style="color:#c00;padding:20px">Нет интернета — библиотека QR не загрузилась. Обнови страницу с сетью.</p>'}</div>
+    <p class="code"></p>
+    <p class="code-label">код для ручного ввода</p>
+    <p class="url no-print"></p>
+    <div class="dl no-print"><button class="ghost">Скачать PNG</button></div>
+  `;
+  el.querySelector('h3').textContent   = title;
+  el.querySelector('.task').textContent = task || '';
+  el.querySelector('.code').textContent = token;
+  if (codeLabel) el.querySelector('.code-label').textContent = codeLabel;
+  el.querySelector('.url').textContent  = url;
+
+  const btn = el.querySelector('.dl button');
+  if (!qr) { btn.disabled = true; }
+  else {
+    btn.addEventListener('click', () => {
+      const a = document.createElement('a');
+      a.href = qr.createDataURL(10, 2);     // крупный PNG, поля 2 модуля
+      a.download = `qr-${token || 'tort'}.png`;
+      a.click();
+    });
+  }
+  return el;
+}
+
+function render() {
+  out.innerHTML = '';
+
+  // QR на торт: ведёт на главную страницу — приветствие и первая подсказка
+  let root = base.value.trim();
+  if (root && !root.endsWith('/')) root += '/';
+  out.appendChild(card({
+    tag:       'На торт',
+    tagClass:  'start',
+    title:     'Начало квеста',
+    task:      'Приветствие и подсказка на первое место',
+    url:       root,
+    token:     '',
+    codeLabel: 'открывает главную страницу'
+  }));
+
+  QUEST.steps.forEach((step, i) => {
+    if (i === 0) return;              // у стартового этапа своего QR нет — он на торте
+    const secret = !!step.secret;
+    out.appendChild(card({
+      tag:      secret ? 'Секретный этап' : 'Этап ' + step.id,
+      tagClass: secret ? 'secret' : 'step',
+      title:    'Открывает этап ' + step.id,
+      task:     step.title,
+      token:    step.token
+    }));
+  });
+
+  out.appendChild(card({
+    tag:      'Финал',
+    tagClass: 'final',
+    title:    'Открывает финальный экран',
+    task:     QUEST.finale.title,
+    token:    QUEST.finale.token
+  }));
+}
+
+document.getElementById('regen').addEventListener('click', render);
+document.getElementById('print').addEventListener('click', () => print());
+document.getElementById('reset').addEventListener('click', () => {
+  if (!confirm('Стереть прогресс квеста в этом браузере?')) return;
+  try { localStorage.removeItem('quest-progress-v1'); } catch (e) {}
+  alert('Прогресс сброшен.');
+});
+
+render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fbf3e9">
+<meta name="robots" content="noindex, nofollow">
+<title>Квест</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%81%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+
+<main class="shell">
+
+  <!-- прогресс по этапам -->
+  <div class="progress is-hidden" id="progress" aria-hidden="true">
+    <div class="progress__row">
+      <span class="progress__label" id="progress-label">Квест</span>
+      <span class="progress__count" id="progress-count"></span>
+    </div>
+    <div class="progress__track"><div class="progress__fill" id="progress-fill"></div></div>
+  </div>
+
+  <!-- ================= ПРИВЕТСТВИЕ ================= -->
+  <section class="screen" id="screen-intro">
+    <div class="center stagger">
+      <p class="kicker" id="intro-kicker"></p>
+      <h1 id="intro-title"></h1>
+      <p class="lead" id="intro-text"></p>
+      <div class="btn-stack">
+        <button class="btn" id="intro-start"></button>
+      </div>
+      <p class="note mt-24" id="intro-note"></p>
+    </div>
+  </section>
+
+  <!-- ================= ЗАДАНИЕ ================= -->
+  <section class="screen" id="screen-task">
+    <div class="stagger">
+      <h2 id="task-title"></h2>
+
+      <p class="task-text" id="task-text"></p>
+
+      <!-- ребусы и прочая разметка задания (task.html) -->
+      <div class="extra is-hidden" id="task-extra"></div>
+
+      <!-- проигрыватель: показывается, если у задания указан task.audio -->
+      <div class="player is-hidden" id="task-player">
+        <button class="player__play" id="player-play" type="button" aria-label="Включить">
+          <svg class="player__icon" id="player-icon-play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>
+          <svg class="player__icon is-hidden" id="player-icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h3.2v14H7zM13.8 5H17v14h-3.2z"/></svg>
+        </button>
+        <div class="player__body">
+          <div class="player__title" id="player-title"></div>
+          <div class="player__track" id="player-track"><div class="player__fill" id="player-fill"></div></div>
+        </div>
+        <div class="player__time" id="player-time">0:00</div>
+      </div>
+      <audio id="task-audio" preload="metadata"></audio>
+
+      <div class="btn-stack">
+        <button class="btn" id="task-submit">Выполнено</button>
+      </div>
+
+      <!-- подсказка к заданию -->
+      <div class="reveal is-hidden" id="task-reveal">
+        <div class="reveal__btn-wrap">
+          <button class="btn btn--link" id="task-reveal-btn">Нужна подсказка</button>
+        </div>
+        <div class="reveal__body" id="task-reveal-body"></div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <button class="btn btn--link" id="task-manual">Ввести код вручную</button>
+    </div>
+  </section>
+
+  <!-- ================= ПОДСКАЗКА, ГДЕ QR ================= -->
+  <section class="screen" id="screen-reward">
+    <div class="stagger">
+      <h2 id="reward-title"></h2>
+      <p class="lead" id="reward-text"></p>
+
+      <div class="card card--accent">
+        <span class="where-label" id="reward-label"></span>
+        <p class="where" id="reward-where"></p>
+        <p class="where-note is-hidden" id="reward-note"></p>
+        <img class="where-img is-hidden" id="reward-img" alt="">
+      </div>
+
+      <div class="scan-hint">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/>
+          <path d="M7 12h10"/>
+        </svg>
+        <span>Найди QR-код и наведи на него камеру телефона — откроется следующее задание.</span>
+      </div>
+    </div>
+
+    <div class="foot">
+      <button class="btn btn--link" id="reward-manual">Ввести код вручную</button>
+    </div>
+  </section>
+
+  <!-- ================= СЛУЖЕБНОЕ СООБЩЕНИЕ ================= -->
+  <section class="screen" id="screen-notice">
+    <div class="center stagger">
+      <h2 id="notice-title"></h2>
+      <p class="lead" id="notice-text"></p>
+      <div class="btn-stack">
+        <button class="btn" id="notice-back"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= РУЧНОЙ ВВОД КОДА ================= -->
+  <section class="screen" id="screen-manual">
+    <div class="center stagger">
+      <h2 id="manual-title"></h2>
+      <p class="lead" id="manual-text"></p>
+
+      <div class="card card--plain">
+        <input class="input" id="manual-input" type="text"
+               autocomplete="off" autocorrect="off" autocapitalize="off"
+               spellcheck="false" enterkeyhint="go" placeholder="Код с бумажки">
+        <p class="msg" id="manual-msg"><span>⚠</span><span id="manual-msg-text"></span></p>
+        <div class="btn-stack">
+          <button class="btn" id="manual-submit">Открыть</button>
+          <button class="btn btn--ghost" id="manual-cancel">Назад</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ФИНАЛ ================= -->
+  <section class="screen" id="screen-finale">
+    <div class="center stagger">
+      <p class="kicker" id="finale-kicker"></p>
+      <h1 id="finale-title"></h1>
+      <p class="finale-text" id="finale-text"></p>
+      <p class="signature is-hidden" id="finale-signature"></p>
+      <div class="btn-stack">
+        <button class="btn" id="finale-btn"></button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/confetti.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
