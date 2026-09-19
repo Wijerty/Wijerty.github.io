@@ -90,10 +90,6 @@
   .sheet[data-per="9"] .qr-card h3 { display: none; }
 
   .qr-card h3 { margin: 0; font-size: 12px; font-weight: 600; }
-  .qr-card .task {
-    margin: 0; font-size: 11px; color: #999;
-    max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
   .code {
     margin: 0; font: 700 13px ui-monospace, SFMono-Regular, Menlo, monospace;
     letter-spacing: .14em; text-transform: uppercase; color: #000;
@@ -119,8 +115,6 @@
     @page { size: A4; margin: 0; }
     body { background: #fff; padding: 0; }
     .no-print, .dl { display: none !important; }
-    /* название задания — только для тебя на экране, на бумаге это спойлер */
-    .qr-card .task { display: none !important; }
     .wrap { max-width: none; }
     .sheet {
       width: 210mm; min-height: 297mm;
@@ -208,7 +202,7 @@ function makeQR(text) {
   return qr;
 }
 
-function card({ tag, tagClass, title, task, token, url: fixedUrl, codeLabel }) {
+function card({ tag, tagClass, title, token, url: fixedUrl, codeLabel }) {
   const url = fixedUrl || linkFor(token);
   const qr  = makeQR(url);
 
@@ -217,7 +211,6 @@ function card({ tag, tagClass, title, task, token, url: fixedUrl, codeLabel }) {
   el.innerHTML = `
     <span class="tag ${tagClass}">${tag}</span>
     <h3></h3>
-    <p class="task"></p>
     <div class="qr-box">${qr ? qr.createSvgTag({ cellSize: 6, margin: 0, scalable: true })
                              : '<p class="err" style="color:#c00;padding:20px">Нет интернета — библиотека QR не загрузилась. Обнови страницу с сетью.</p>'}</div>
     <p class="code"></p>
@@ -225,8 +218,7 @@ function card({ tag, tagClass, title, task, token, url: fixedUrl, codeLabel }) {
     <p class="url no-print"></p>
     <div class="dl no-print"><button class="ghost">Скачать PNG</button></div>
   `;
-  el.querySelector('h3').textContent   = title;
-  el.querySelector('.task').textContent = task || '';
+  el.querySelector('h3').textContent = title;
   el.querySelector('.code').textContent = token;
   if (codeLabel) el.querySelector('.code-label').textContent = codeLabel;
   el.querySelector('.url').textContent  = url;
@@ -261,7 +253,6 @@ function render() {
     tag:       'На торт',
     tagClass:  'start',
     title:     'Начало квеста',
-    task:      'приветствие и первая подсказка',
     url:       root,
     token:     '',
     codeLabel: 'открывает главную'
@@ -274,7 +265,6 @@ function render() {
       tag:      secret ? 'Секретный' : 'Этап ' + step.id,
       tagClass: secret ? 'secret' : 'step',
       title:    'Открывает этап ' + step.id,
-      task:     step.title,
       token:    step.token
     });
   });
@@ -283,7 +273,6 @@ function render() {
     tag:      'Финал',
     tagClass: 'final',
     title:    'Открывает финальный экран',
-    task:     QUEST.finale.title,
     token:    QUEST.finale.token
   });
 
