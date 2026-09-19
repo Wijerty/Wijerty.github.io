@@ -57,41 +57,57 @@
   button.danger { background: transparent; color: var(--red); border: 1px solid rgba(255,107,122,.4); }
   button:active { transform: scale(.98); }
 
-  .cards { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  /* ---------- лист А4: то, что видно на экране, то и напечатается ---------- */
+  .sheet {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 10mm;
+    margin: 0 auto 24px;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(61,43,33,.14);
+    display: grid;
+    gap: 0;
+    align-content: start;
+  }
+  .sheet[data-per="9"] { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 92.3mm; --qr: 44mm; }
+  .sheet[data-per="4"] { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 138.5mm; --qr: 72mm; }
+  .sheet[data-per="1"] { grid-template-columns: 1fr;            grid-auto-rows: 277mm;   --qr: 120mm; }
 
   .qr-card {
-    background: var(--panel); border: 1px solid var(--line);
-    border-radius: 14px; padding: 20px; text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3mm;
+    padding: 4mm 3mm;
+    border: 1px dashed #d8d8d8;      /* линии реза */
+    color: #000;
+    text-align: center;
     break-inside: avoid;
   }
-  .qr-card h3 {
-    margin: 0 0 4px; font-size: 15px; letter-spacing: .02em;
+  .qr-box { line-height: 0; }
+  .qr-box svg, .qr-box img { width: var(--qr); height: var(--qr); display: block; }
+  .sheet[data-per="9"] .qr-card h3 { display: none; }
+
+  .qr-card h3 { margin: 0; font-size: 12px; font-weight: 600; }
+  .qr-card .task {
+    margin: 0; font-size: 11px; color: #999;
+    max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .qr-card .task { margin: 0 0 16px; font-size: 13px; color: var(--dim);
-                   min-height: 34px; display: flex; align-items: center; justify-content: center; }
-  .qr-box {
-    background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px;
-    display: inline-block; line-height: 0;
-  }
-  .qr-box svg, .qr-box img { width: 100%; height: auto; max-width: 200px; display: block; }
   .code {
-    margin: 14px 0 0; font: 600 15px ui-monospace, SFMono-Regular, Menlo, monospace;
-    letter-spacing: .16em; color: var(--gold); text-transform: uppercase;
+    margin: 0; font: 700 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: .14em; text-transform: uppercase; color: #000;
   }
-  .code-label { margin: 2px 0 0; font-size: 11px; color: var(--faint); }
-  .url { margin: 10px 0 0; font-size: 11px; color: var(--faint); word-break: break-all; }
-  .dl { margin-top: 14px; }
-  .dl button { padding: 8px 14px; font-size: 13px; }
+  .code-label { margin: 0; font-size: 8.5px; color: #888; letter-spacing: .04em; }
+  .url { display: none; }
+  .dl button { padding: 6px 12px; font-size: 12px; }
 
   .tag {
-    display: inline-block; padding: 3px 9px; border-radius: 99px;
-    font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-    margin-bottom: 10px;
+    display: inline-block; padding: 2px 8px; border-radius: 99px;
+    font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    border: 1px solid #bbb; color: #333;
   }
-  .tag.step  { background: rgba(242,166,90,.2);  color: #8a5a20; }
-  .tag.final { background: rgba(124,154,109,.2); color: #4a6640; }
-  .tag.start { background: rgba(226,104,75,.15); color: #a33a22; }
-  .tag.secret { background: #3d2b21; color: #fbf3e9; }
+  .tag.secret { background: #333; color: #fff; border-color: #333; }
 
   .hint { font-size: 13px; color: var(--faint); margin-top: 8px; line-height: 1.55; }
   .hint code { color: var(--dim); background: #fff; padding: 2px 6px; border-radius: 5px; }
@@ -100,21 +116,20 @@
 
   /* --------- печать: одна карточка на страницу, чёрным по белому --------- */
   @media print {
-    body { background: #fff; color: #000; padding: 0; }
-    .no-print { display: none !important; }
-    .cards { display: block; }
-    .qr-card {
-      background: #fff; border: none; color: #000;
-      page-break-after: always; break-after: page;
-      height: 100vh; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; padding: 0;
+    @page { size: A4; margin: 0; }
+    body { background: #fff; padding: 0; }
+    .no-print, .dl { display: none !important; }
+    /* название задания — только для тебя на экране, на бумаге это спойлер */
+    .qr-card .task { display: none !important; }
+    .wrap { max-width: none; }
+    .sheet {
+      width: 210mm; min-height: 297mm;
+      margin: 0; padding: 10mm;
+      box-shadow: none;
+      break-after: page;
     }
-    .qr-card .task, .url, .dl { display: none; }
-    .qr-box { padding: 0; }
-    .qr-box svg, .qr-box img { max-width: 340px; }
-    .code { color: #000; }
-    .code-label { color: #555; }
-    .tag { border: 1px solid #000; color: #000 !important; background: none !important; }
+    .sheet:last-child { break-after: auto; }
+    .qr-card { border-color: #e0e0e0; }
   }
 </style>
 </head>
@@ -136,11 +151,19 @@
     <div class="row">
       <button id="regen">Обновить коды</button>
       <button class="ghost" id="print">Распечатать всё</button>
+      <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim)">
+        на страницу
+        <select id="perpage" style="padding:10px 12px;font:inherit;color:var(--text);background:#fff;border:1px solid var(--line);border-radius:9px">
+          <option value="9" selected>9 кодов</option>
+          <option value="4">4 кода</option>
+          <option value="1">1 код</option>
+        </select>
+      </label>
       <button class="ghost" id="reset">Сбросить прогресс квеста</button>
     </div>
   </div>
 
-  <div id="out" class="cards"></div>
+  <div id="out"></div>
 
   <div class="panel no-print" style="margin-top:26px">
     <label>Как раскладывать</label>
@@ -221,44 +244,62 @@ function card({ tag, tagClass, title, task, token, url: fixedUrl, codeLabel }) {
   return el;
 }
 
+function perPage() {
+  return parseInt(document.getElementById('perpage').value, 10) || 9;
+}
+
+/** Собирает карточки и раскладывает их по листам А4. */
 function render() {
   out.innerHTML = '';
 
-  // QR на торт: ведёт на главную страницу — приветствие и первая подсказка
+  const items = [];
+
+  // QR на торт: ведёт на главную страницу
   let root = base.value.trim();
   if (root && !root.endsWith('/')) root += '/';
-  out.appendChild(card({
+  items.push({
     tag:       'На торт',
     tagClass:  'start',
     title:     'Начало квеста',
-    task:      'Приветствие и подсказка на первое место',
+    task:      'приветствие и первая подсказка',
     url:       root,
     token:     '',
-    codeLabel: 'открывает главную страницу'
-  }));
+    codeLabel: 'открывает главную'
+  });
 
   QUEST.steps.forEach((step, i) => {
     if (i === 0) return;              // у стартового этапа своего QR нет — он на торте
     const secret = !!step.secret;
-    out.appendChild(card({
-      tag:      secret ? 'Секретный этап' : 'Этап ' + step.id,
+    items.push({
+      tag:      secret ? 'Секретный' : 'Этап ' + step.id,
       tagClass: secret ? 'secret' : 'step',
       title:    'Открывает этап ' + step.id,
       task:     step.title,
       token:    step.token
-    }));
+    });
   });
 
-  out.appendChild(card({
+  items.push({
     tag:      'Финал',
     tagClass: 'final',
     title:    'Открывает финальный экран',
     task:     QUEST.finale.title,
     token:    QUEST.finale.token
-  }));
+  });
+
+  // раскладываем по листам
+  const per = perPage();
+  for (let i = 0; i < items.length; i += per) {
+    const sheet = document.createElement('div');
+    sheet.className = 'sheet';
+    sheet.dataset.per = per;
+    items.slice(i, i + per).forEach(it => sheet.appendChild(card(it)));
+    out.appendChild(sheet);
+  }
 }
 
 document.getElementById('regen').addEventListener('click', render);
+document.getElementById('perpage').addEventListener('change', render);
 document.getElementById('print').addEventListener('click', () => print());
 document.getElementById('reset').addEventListener('click', () => {
   if (!confirm('Стереть прогресс квеста в этом браузере?')) return;
